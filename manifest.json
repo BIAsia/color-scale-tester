@@ -1,0 +1,12 @@
+{
+  "name": "color scale tester",
+  "id": "1222821456213121627",
+  "api": "1.0.0",
+  "main": "code.js",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "editorType": [
+    "figma"
+  ],
+  "ui": "ui.html"
+}
