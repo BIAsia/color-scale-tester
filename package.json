@@ -12,5 +12,9 @@
   "devDependencies": {
     "@figma/plugin-typings": "*",
     "typescript": "*"
+  },
+  "dependencies": {
+    "apca-w3": "^0.1.9",
+    "get-contrast": "^3.0.0"
   }
 }

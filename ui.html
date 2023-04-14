@@ -1,17 +1,136 @@
-<h2>Rectangle Creator</h2>
-<p>Count: <input id="count" value="5"></p>
-<button id="create">Create</button>
-<button id="cancel">Cancel</button>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/thomas-lowry/figma-plugin-ds/dist/figma-plugin-ds.css">
+<style>
+  body {
+    margin: 16;
+  }
+  p, ul {
+    font-size: 12;
+  }
+  .quote {
+    margin-bottom: 16;
+    background-color: #F3F3F3;
+    padding: 8 0 8 0;
+  }
+  .flex-row {
+    display: flex;
+    flex-direction: row;
+    align-items:flex-start;
+    margin: 16 0 16 0;
+  }
+  .row {
+    margin-right: 16;
+  }
+  .label {
+    color: #333;
+  }
+  .input {
+    width: 140px;
+  }
+  .flex-col {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    margin: 8 0 8 0;
+  }
+  .label-block {
+    background: #F3F3F3;
+    width: 126px;
+  }
+  .onboarding-tip{
+    background-color: #F3F3F3;
+    padding: 8;
+    border-radius: 4px;
+  }
+  .footer {
+    position: fixed;
+    bottom: 0px;
+    width: 268px;
+  }
+  .button {
+    margin-top: 16px;
+    width: 100%;
+  }
+</style>
+
+<div class="section-title">Choose role to test</div>
+<div class="flex-row">
+  <div class="label">foreground</div>
+  <div>
+    <div class="input">
+      <input type="input" class="input__field" placeholder="Input last color name" id="input-fg">
+    </div>
+  </div>
+  <div class="icon-button">
+    <div class="icon icon--plus" onclick="addFg()"></div>
+  </div>
+</div>
+<div class="flex-row">
+  <div class="label">background</div>
+  <div>
+    <div class="input">
+      <input type="input" class="input__field" placeholder="Input last color name" id="input-bg">
+    </div>
+  </div>
+  <div class="icon-button">
+    <div class="icon icon--plus" onclick="addBg()"></div>
+  </div>
+</div>
+<div class="flex-row" >
+  <div class="row" id="fg-colors">
+    <div class="label label-block" >foregrounds</div>
+  </div>
+  <div class="row" id="bg-colors">
+    <div class="label label-block">backgrounds</div>
+  </div>
+</div>
+<div class="flex-col footer">
+  <button class='button button--secondary fill' id="clean">Clean the list</button>
+  <button class='button button--primary fill' id="create">Create Contrast Grid</button>
+</div>
+
 <script>
+let fgArray = []
+let bgArray = []
 
 document.getElementById('create').onclick = () => {
-  const textbox = document.getElementById('count');
-  const count = parseInt(textbox.value, 10);
-  parent.postMessage({ pluginMessage: { type: 'create-rectangles', count } }, '*')
+  parent.postMessage({ pluginMessage: { type: 'generate', fg:fgArray, bg:bgArray} }, '*')
 }
 
-document.getElementById('cancel').onclick = () => {
-  parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
+document.getElementById('clean').onclick = () => {
+  document.getElementById('fg-colors').innerHTML=`<div class="label label-block" >foregrounds</div>`
+  document.getElementById('bg-colors').innerHTML=`<div class="label label-block">backgrounds</div>`
+  fgArray = []
+  bgArray = []
 }
 
+function addFg(){
+  const fgList = document.getElementById('fg-colors')
+  const fgInput = document.getElementById('input-fg')
+  fgArray.push(fgInput.value)
+  addItem(fgInput.value, fgList)
+  fgInput.value = ''
+  fgInput.focus()
+}
+
+function addBg(){
+  const bgList = document.getElementById('bg-colors')
+  const bgInput = document.getElementById('input-bg')
+  bgArray.push(bgInput.value)
+  addItem(bgInput.value, bgList)
+  bgInput.value = ''
+  bgInput.focus()
+}
+
+function addItem(text, list){
+  const newItem = document.createElement('div')
+  newItem.className = "label"
+  newItem.innerHTML = text
+  list.appendChild(newItem)
+}
+
+</script>
+<script src="https://cdn.jsdelivr.net/gh/thomas-lowry/figma-plugin-ds/dist/iife/figma-plugin-ds.js"></script>
+<script>
+    selectMenu.init(); //initiates the select menu component
+    disclosure.init(); //initiates the disclosure component
 </script>
