@@ -11,10 +11,13 @@
   "license": "",
   "devDependencies": {
     "@figma/plugin-typings": "*",
+    "@types/color": "^3.0.3",
     "typescript": "*"
   },
   "dependencies": {
     "apca-w3": "^0.1.9",
-    "get-contrast": "^3.0.0"
+    "color": "^4.2.3",
+    "get-contrast": "^3.0.0",
+    "polished": "^4.2.2"
   }
 }

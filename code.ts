@@ -6,6 +6,8 @@
 // full browser environment (see documentation).
 
 // This shows the HTML page in "ui.html".
+import { getContrast } from 'polished';
+import * as Color from 'color';
 figma.showUI(__html__);
 figma.ui.resize(300, 500);
 let allPaintStyles: PaintStyle[];
@@ -15,6 +17,50 @@ let ColorGrid: SceneNode[] = [];
 
 const CELL_WIDTH = 100;
 const CELL_HEIGHT = 50;
+
+const MIN_CONTRAST_RATIO_WCAG_NORMAL = 4.5;
+const MIN_CONTRAST_RATIO_WCAG_LARGE = 3;
+const MIN_CONTRAST_RATIO_APCA = 3;
+
+function getSolidColor(paintStyle: PaintStyle){
+  if (paintStyle.paints.length == 1 ){
+    const paint = paintStyle.paints[0]
+    if (paint.type === 'SOLID'){
+      return paint.color;
+    } else return {r:0, g:0, b:0}
+  } else return {r:0, g:0, b:0}
+}
+
+
+function checkContrastRatio(fgPaintStyles: PaintStyle[], bgPaintStyles: PaintStyle[]) {
+  // Extract the color values from the paint styles
+  const fgColors = fgPaintStyles.map((paintStyle) => getSolidColor(paintStyle));
+  const bgColors = bgPaintStyles.map((paintStyle) => getSolidColor(paintStyle));
+
+  // Convert the colors to the appropriate format
+  const fgColorObjects = fgColors.map((color) => Color.rgb(color.r, color.g, color.b));
+  const bgColorObjects = bgColors.map((color) => Color.rgb(color.r, color.g, color.b));
+  const fgColorsLab = fgColorObjects.map((color) => color.lab().array());
+  const bgColorsLab = bgColorObjects.map((color) => color.lab().array());
+  const fgColorsRGB = fgColorsLab.map((color) => Color.lab(color).rgb().object());
+  const bgColorsRGB = bgColorsLab.map((color) => Color.lab(color).rgb().object());
+  const fgColorsString = fgColorsRGB.map((color) => Color.rgb(color.r, color.g, color.b).string());
+  const bgColorsString = bgColorsRGB.map((color) => Color.rgb(color.r, color.g, color.b).string());
+
+  // Calculate the contrast ratio for each pair of colors
+  const contrastRatios = fgColorsString.map((fgColor, i) => {
+    const bgColor = bgColorsString[i];
+    return getContrast(fgColor, bgColor);
+  });
+
+  // Check if the contrast ratios meet the standards
+  const wcagNormal = contrastRatios.every((ratio) => ratio >= MIN_CONTRAST_RATIO_WCAG_NORMAL);
+  const wcagLarge = contrastRatios.every((ratio) => ratio >= MIN_CONTRAST_RATIO_WCAG_LARGE);
+  const apca = contrastRatios.every((ratio) => ratio >= MIN_CONTRAST_RATIO_APCA);
+
+  // Return the results
+  return { contrastRatios, wcagNormal, wcagLarge, apca };
+}
 
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
